@@ -166,10 +166,17 @@
     });
 
     grist.onRecords(async function(records) {
-      const tableSelection = await grist.docApi.fetchTable("DATE_SELECTIONNEE");
-const dateSelectionnee = tableSelection.Date_consultee
-  ? tableSelection.Date_consultee[0]
-  : null;
+   const tableSelection = await grist.docApi.fetchTable("DATE_SELECTIONNEE");
+
+let dateSelectionnee = null;
+
+if (
+  tableSelection.Date_consultee &&
+  tableSelection.Date_consultee[0]
+) {
+  dateSelectionnee =
+    new Date(tableSelection.Date_consultee[0] * 1000);
+}
 
       const contenu = document.getElementById("contenu");
       const titreMois = document.getElementById("titre-mois");
