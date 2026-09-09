@@ -51,7 +51,7 @@
 
 <script>
   grist.ready({
-    requiredAccess: "read table"
+    requiredAccess: "full"
   });
 
   grist.onRecords(function(records) {
@@ -84,9 +84,16 @@
           '<div class="numero">' + nom + '</div>' +
           '<div class="info">' + (affichage || "") + '</div>';
 
-        caseJour.addEventListener("click", function() {
-          console.log("Date cliquée :", date);
-        });
+        caseJour.addEventListener("click", async function() {
+  const table = await grist.docApi.fetchTable("DATE_SELECTIONNEE");
+  const ligneId = table.id[0];
+
+  await grist.docApi.applyUserActions([
+    ["UpdateRecord", "DATE_SELECTIONNEE", ligneId, {
+      Date_consultee: date
+    }]
+  ]);
+});
 
         contenu.appendChild(caseJour);
       });
