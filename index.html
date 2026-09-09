@@ -314,6 +314,10 @@ affichagePropre = affichagePropre.replace(
   /^\s*\d+\s*/,
   ""
 );
+          affichagePropre = affichagePropre.replace(
+  /(🟠)/g,
+  "<br>$1"
+);
 
 caseJour.innerHTML =
   '<div class="numero-jour">' +
