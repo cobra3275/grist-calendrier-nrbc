@@ -3,16 +3,33 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
   <title>Calendrier Grist cliquable</title>
 
   <script src="https://docs.getgrist.com/grist-plugin-api.js"></script>
 
   <style>
+
     body {
       font-family: Arial, sans-serif;
       margin: 0;
       padding: 10px;
     }
+
+    /* =========================
+       TITRE DU MOIS
+       ========================= */
+
+    #titre-mois {
+      text-align: center;
+      font-size: 22px;
+      font-weight: bold;
+      padding: 8px 0 12px 0;
+    }
+
+    /* =========================
+       EN-TÊTES DES JOURS
+       ========================= */
 
     #entetes {
       display: grid;
@@ -27,13 +44,30 @@
       padding: 8px 4px;
       border: 1px solid #ccc;
       border-radius: 6px;
+      background: white;
     }
+
+    /* Week-end */
+
+    #entetes div:nth-child(6),
+    #entetes div:nth-child(7) {
+      background: #d9eaff;
+      border-color: #b8d4f5;
+    }
+
+    /* =========================
+       GRILLE DU CALENDRIER
+       ========================= */
 
     #contenu {
       display: grid;
       grid-template-columns: repeat(7, 1fr);
       gap: 6px;
     }
+
+    /* =========================
+       CASE JOUR
+       ========================= */
 
     .jour {
       border: 1px solid #ccc;
@@ -47,56 +81,131 @@
     .jour:hover {
       background: #f2f2f2;
     }
-    .jour.hors-mois {
-  background: #eeeeee;
-  color: #888888;
-}
-    .jour.selectionne {
-  outline: 3px solid #2b6cb0;
-  outline-offset: -3px;
-  font-weight: bold;
-}
 
-.jour.hors-mois:hover {
-  background: #e2e2e2;
-}
+    /* =========================
+       WEEK-END
+       ========================= */
+
+    .jour.weekend {
+      background: #e5f1ff;
+      border-color: #c4daf2;
+    }
+
+    .jour.weekend:hover {
+      background: #d7e9fc;
+    }
+
+    /* =========================
+       JOURS HORS DU MOIS
+       ========================= */
+
+    .jour.hors-mois {
+      background: #eeeeee;
+      color: #888888;
+    }
+
+    .jour.hors-mois:hover {
+      background: #e2e2e2;
+    }
+
+    /* Hors mois + week-end */
+
+    .jour.hors-mois.weekend {
+      background: #edf4fc;
+      color: #999999;
+      border-color: #d8e3ef;
+    }
+
+    .jour.hors-mois.weekend:hover {
+      background: #e3edf8;
+    }
+
+    /* =========================
+       JOUR SÉLECTIONNÉ
+       ========================= */
+
+    .jour.selectionne {
+      outline: 3px solid #2b6cb0;
+      outline-offset: -3px;
+      font-weight: bold;
+    }
+
+    /* =========================
+       INFORMATIONS
+       ========================= */
 
     .info {
       font-size: 13px;
       line-height: 1.4;
     }
+
   </style>
 </head>
 
 <body>
 
-<div id="entetes">
-  <div>LUNDI</div>
-  <div>MARDI</div>
-  <div>MERCREDI</div>
-  <div>JEUDI</div>
-  <div>VENDREDI</div>
-  <div>SAMEDI</div>
-  <div>DIMANCHE</div>
-</div>
+  <!-- TITRE DU MOIS -->
+  <div id="titre-mois"></div>
 
-<div id="contenu"></div>
+  <!-- EN-TÊTES -->
+  <div id="entetes">
+    <div>LUNDI</div>
+    <div>MARDI</div>
+    <div>MERCREDI</div>
+    <div>JEUDI</div>
+    <div>VENDREDI</div>
+    <div>SAMEDI</div>
+    <div>DIMANCHE</div>
+  </div>
 
-<script>
-  grist.ready({
-    requiredAccess: "full"
-  });
+  <!-- CALENDRIER -->
+  <div id="contenu"></div>
 
-  grist.onRecords(function(records) {
+  <script>
 
-    const contenu = document.getElementById("contenu");
-    contenu.innerHTML = "";
+    grist.ready({
+      requiredAccess: "full"
+    });
 
-    records
-      .filter(record => record.Afficher_mois_selectionne)
-      .forEach(record => {
+    grist.onRecords(function(records) {
+
+      const contenu = document.getElementById("contenu");
+      const titreMois = document.getElementById("titre-mois");
+
+      contenu.innerHTML = "";
+      titreMois.innerHTML = "";
+
+      /* =========================
+         FILTRAGE DU MOIS
+         ========================= */
+
+      const recordsMois = records.filter(
+        record => record.Afficher_mois_selectionne
+      );
+
+      /* =========================
+         TITRE DU MOIS
+         ========================= */
+
+      if (recordsMois.length > 0) {
+
+        const premierRecord = recordsMois[0];
+
+        const mois = premierRecord.Mois || "";
+        const annee = premierRecord.Annee || "";
+
+        titreMois.textContent =
+          String(mois).toUpperCase() + " " + annee;
+      }
+
+      /* =========================
+         CONSTRUCTION DU CALENDRIER
+         ========================= */
+
+      recordsMois.forEach(record => {
 
         const jours = [
+
           ["Lundi", record.Lundi, record.Affichage_Lundi],
           ["Mardi", record.Mardi, record.Affichage_Mardi],
           ["Mercredi", record.Mercredi, record.Affichage_Mercredi],
@@ -104,46 +213,98 @@
           ["Vendredi", record.Vendredi, record.Affichage_Vendredi],
           ["Samedi", record.Samedi, record.Affichage_Samedi],
           ["Dimanche", record.Dimanche, record.Affichage_Dimanche]
+
         ];
 
-        jours.forEach(([nom, date, affichage]) => {
+        jours.forEach(([nom, date, affichage], index) => {
 
           if (!date) {
             return;
           }
 
-const caseJour = document.createElement("div");
-caseJour.className = "jour";
+          /* =========================
+             CRÉATION DE LA CASE
+             ========================= */
 
-const dateJour = new Date(date);
-          const moisAffiche = Number(record.Numero_mois_affiche);
+          const caseJour = document.createElement("div");
 
-if ((dateJour.getMonth() + 1) !== moisAffiche) {
-  caseJour.classList.add("hors-mois");
-}
+          caseJour.className = "jour";
+
+          /* =========================
+             WEEK-END
+             ========================= */
+
+          if (index === 5 || index === 6) {
+            caseJour.classList.add("weekend");
+          }
+
+          /* =========================
+             DÉTECTION HORS MOIS
+             ========================= */
+
+          const dateJour = new Date(date);
+
+          const moisAffiche =
+            Number(record.Numero_mois_affiche);
+
+          if ((dateJour.getMonth() + 1) !== moisAffiche) {
+            caseJour.classList.add("hors-mois");
+          }
+
+          /* =========================
+             CONTENU DE LA CASE
+             ========================= */
 
           caseJour.innerHTML =
-            '<div class="info">' + (affichage || "") + '</div>';
+            '<div class="info">' +
+            (affichage || "") +
+            '</div>';
+
+          /* =========================
+             CLIC SUR UNE JOURNÉE
+             ========================= */
 
           caseJour.addEventListener("click", async function() {
-            document.querySelectorAll(".jour").forEach(j => j.classList.remove("selectionne"));
-caseJour.classList.add("selectionne");
-            const table = await grist.docApi.fetchTable("DATE_SELECTIONNEE");
+
+            /* Mise en évidence */
+
+            document
+              .querySelectorAll(".jour")
+              .forEach(j => j.classList.remove("selectionne"));
+
+            caseJour.classList.add("selectionne");
+
+            /* Écriture de la date dans Grist */
+
+            const table =
+              await grist.docApi.fetchTable("DATE_SELECTIONNEE");
+
             const ligneId = table.id[0];
 
             await grist.docApi.applyUserActions([
-              ["UpdateRecord", "DATE_SELECTIONNEE", ligneId, {
-                Date_consultee: date
-              }]
+
+              [
+                "UpdateRecord",
+                "DATE_SELECTIONNEE",
+                ligneId,
+                {
+                  Date_consultee: date
+                }
+              ]
+
             ]);
+
           });
 
           contenu.appendChild(caseJour);
+
         });
+
       });
 
-  });
-</script>
+    });
+
+  </script>
 
 </body>
 </html>
