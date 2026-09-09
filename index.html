@@ -165,7 +165,11 @@
       requiredAccess: "full"
     });
 
-    grist.onRecords(function(records) {
+    grist.onRecords(async function(records) {
+      const tableSelection = await grist.docApi.fetchTable("DATE_SELECTIONNEE");
+const dateSelectionnee = tableSelection.Date_consultee
+  ? tableSelection.Date_consultee[0]
+  : null;
 
       const contenu = document.getElementById("contenu");
       const titreMois = document.getElementById("titre-mois");
@@ -275,6 +279,18 @@
           ) {
             caseJour.classList.add("hors-mois");
           }
+          if (dateSelectionnee) {
+  const d1 = new Date(date);
+  const d2 = new Date(dateSelectionnee);
+
+  if (
+    d1.getFullYear() === d2.getFullYear() &&
+    d1.getMonth() === d2.getMonth() &&
+    d1.getDate() === d2.getDate()
+  ) {
+    caseJour.classList.add("selectionne");
+  }
+}
 
           /* =========================
              CONTENU
