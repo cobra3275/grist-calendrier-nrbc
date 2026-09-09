@@ -47,6 +47,14 @@
     .jour:hover {
       background: #f2f2f2;
     }
+    .jour.hors-mois {
+  background: #eeeeee;
+  color: #888888;
+}
+
+.jour.hors-mois:hover {
+  background: #e2e2e2;
+}
 
     .info {
       font-size: 13px;
@@ -99,8 +107,15 @@
             return;
           }
 
-          const caseJour = document.createElement("div");
-          caseJour.className = "jour";
+const caseJour = document.createElement("div");
+caseJour.className = "jour";
+
+const dateJour = new Date(date);
+          const moisAffiche = Number(record.Numero_mois_affiche);
+
+if ((dateJour.getMonth() + 1) !== moisAffiche) {
+  caseJour.classList.add("hors-mois");
+}
 
           caseJour.innerHTML =
             '<div class="info">' + (affichage || "") + '</div>';
