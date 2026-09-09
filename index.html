@@ -13,20 +13,22 @@
       margin: 0;
       padding: 10px;
     }
-#entetes {
-  display: grid;
-  grid-template-columns: repeat(7, 1fr);
-  gap: 6px;
-  margin-bottom: 6px;
-  font-weight: bold;
-  text-align: center;
-}
 
-#entetes div {
-  padding: 8px 4px;
-  border: 1px solid #ccc;
-  border-radius: 6px;
-}
+    #entetes {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 6px;
+      margin-bottom: 6px;
+      font-weight: bold;
+      text-align: center;
+    }
+
+    #entetes div {
+      padding: 8px 4px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+    }
+
     #contenu {
       display: grid;
       grid-template-columns: repeat(7, 1fr);
@@ -44,11 +46,6 @@
 
     .jour:hover {
       background: #f2f2f2;
-    }
-
-    .numero {
-      font-weight: bold;
-      margin-bottom: 6px;
     }
 
     .info {
@@ -69,6 +66,9 @@
   <div>SAMEDI</div>
   <div>DIMANCHE</div>
 </div>
+
+<div id="contenu"></div>
+
 <script>
   grist.ready({
     requiredAccess: "full"
@@ -80,45 +80,45 @@
     contenu.innerHTML = "";
 
     records
-  .filter(record => record.Afficher_mois_selectionne)
-  .forEach(record => {
+      .filter(record => record.Afficher_mois_selectionne)
+      .forEach(record => {
 
-     const jours = [
-  ["Lundi", record.Lundi, record.Affichage_Lundi],
-  ["Mardi", record.Mardi, record.Affichage_Mardi],
-  ["Mercredi", record.Mercredi, record.Affichage_Mercredi],
-  ["Jeudi", record.Jeudi, record.Affichage_Jeudi],
-  ["Vendredi", record.Vendredi, record.Affichage_Vendredi],
-  ["Samedi", record.Samedi, record.Affichage_Samedi],
-  ["Dimanche", record.Dimanche, record.Affichage_Dimanche]
-];
+        const jours = [
+          ["Lundi", record.Lundi, record.Affichage_Lundi],
+          ["Mardi", record.Mardi, record.Affichage_Mardi],
+          ["Mercredi", record.Mercredi, record.Affichage_Mercredi],
+          ["Jeudi", record.Jeudi, record.Affichage_Jeudi],
+          ["Vendredi", record.Vendredi, record.Affichage_Vendredi],
+          ["Samedi", record.Samedi, record.Affichage_Samedi],
+          ["Dimanche", record.Dimanche, record.Affichage_Dimanche]
+        ];
 
-      jours.forEach(([nom, date, affichage]) => {
+        jours.forEach(([nom, date, affichage]) => {
 
-        if (!date) {
-          return;
-        }
+          if (!date) {
+            return;
+          }
 
-        const caseJour = document.createElement("div");
-        caseJour.className = "jour";
+          const caseJour = document.createElement("div");
+          caseJour.className = "jour";
 
-        caseJour.innerHTML =
-  '<div class="info">' + (affichage || "") + '</div>';
+          caseJour.innerHTML =
+            '<div class="info">' + (affichage || "") + '</div>';
 
-        caseJour.addEventListener("click", async function() {
-  const table = await grist.docApi.fetchTable("DATE_SELECTIONNEE");
-  const ligneId = table.id[0];
+          caseJour.addEventListener("click", async function() {
+            const table = await grist.docApi.fetchTable("DATE_SELECTIONNEE");
+            const ligneId = table.id[0];
 
-  await grist.docApi.applyUserActions([
-    ["UpdateRecord", "DATE_SELECTIONNEE", ligneId, {
-      Date_consultee: date
-    }]
-  ]);
-});
+            await grist.docApi.applyUserActions([
+              ["UpdateRecord", "DATE_SELECTIONNEE", ligneId, {
+                Date_consultee: date
+              }]
+            ]);
+          });
 
-        contenu.appendChild(caseJour);
+          contenu.appendChild(caseJour);
+        });
       });
-    });
 
   });
 </script>
