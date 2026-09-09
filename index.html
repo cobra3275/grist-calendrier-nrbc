@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Calendrier Grist cliquable</title>
+
+  <script src="https://docs.getgrist.com/grist-plugin-api.js"></script>
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 10px;
+    }
+
+    #contenu {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 6px;
+    }
+
+    .jour {
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      padding: 8px;
+      min-height: 70px;
+      cursor: pointer;
+      background: white;
+    }
+
+    .jour:hover {
+      background: #f2f2f2;
+    }
+
+    .numero {
+      font-weight: bold;
+      margin-bottom: 6px;
+    }
+
+    .info {
+      font-size: 13px;
+      line-height: 1.4;
+    }
+  </style>
+</head>
+
+<body>
+
+<div id="contenu"></div>
+
+<script>
+  grist.ready({
+    requiredAccess: "read table"
+  });
+
+  grist.onRecords(function(records) {
+
+    const contenu = document.getElementById("contenu");
+    contenu.innerHTML = "";
+
+    records.forEach(record => {
+
+      const jours = [
+        ["Lundi", record.Lundi, record.LUNDI],
+        ["Mardi", record.Mardi, record.MARDI],
+        ["Mercredi", record.Mercredi, record.MERCREDI],
+        ["Jeudi", record.Jeudi, record.JEUDI],
+        ["Vendredi", record.Vendredi, record.VENDREDI],
+        ["Samedi", record.Samedi, record.SAMEDI],
+        ["Dimanche", record.Dimanche, record.DIMANCHE]
+      ];
+
+      jours.forEach(([nom, date, affichage]) => {
+
+        if (!date) {
+          return;
+        }
+
+        const caseJour = document.createElement("div");
+        caseJour.className = "jour";
+
+        caseJour.innerHTML =
+          '<div class="numero">' + nom + '</div>' +
+          '<div class="info">' + (affichage || "") + '</div>';
+
+        caseJour.addEventListener("click", function() {
+          console.log("Date cliquée :", date);
+        });
+
+        contenu.appendChild(caseJour);
+      });
+    });
+
+  });
+</script>
+
+</body>
+</html>
