@@ -132,6 +132,11 @@
        INFORMATIONS
        ========================= */
 
+  .numero-jour {
+  font-size: 18px;
+  font-weight: bold;
+  margin-bottom: 6px;
+}
     .info {
       font-size: 13px;
       line-height: 1.4;
@@ -303,10 +308,13 @@ if (
              CONTENU
              ========================= */
 
-          caseJour.innerHTML =
-            '<div class="info">' +
-            (affichage || "") +
-            '</div>';
+         caseJour.innerHTML =
+  '<div class="numero-jour">' +
+  dateJour.getDate() +
+  '</div>' +
+  '<div class="info">' +
+  (affichage || "") +
+  '</div>';
 
           /* =========================
              CLIC SUR LA JOURNÉE
