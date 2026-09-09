@@ -308,12 +308,19 @@ if (
              CONTENU
              ========================= */
 
-         caseJour.innerHTML =
+       let affichagePropre = affichage || "";
+
+affichagePropre = affichagePropre.replace(
+  /^\s*\d+\s*/,
+  ""
+);
+
+caseJour.innerHTML =
   '<div class="numero-jour">' +
   dateJour.getDate() +
   '</div>' +
   '<div class="info">' +
-  (affichage || "") +
+  affichagePropre +
   '</div>';
 
           /* =========================
