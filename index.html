@@ -28,7 +28,7 @@
     }
 
     /* =========================
-       EN-TÊTES DES JOURS
+       EN-TÊTES
        ========================= */
 
     #entetes {
@@ -47,7 +47,7 @@
       background: white;
     }
 
-    /* Week-end */
+    /* WEEK-END */
 
     #entetes div:nth-child(6),
     #entetes div:nth-child(7) {
@@ -56,7 +56,7 @@
     }
 
     /* =========================
-       GRILLE DU CALENDRIER
+       GRILLE
        ========================= */
 
     #contenu {
@@ -96,7 +96,7 @@
     }
 
     /* =========================
-       JOURS HORS DU MOIS
+       HORS MOIS
        ========================= */
 
     .jour.hors-mois {
@@ -107,8 +107,6 @@
     .jour.hors-mois:hover {
       background: #e2e2e2;
     }
-
-    /* Hors mois + week-end */
 
     .jour.hors-mois.weekend {
       background: #edf4fc;
@@ -191,11 +189,33 @@
 
         const premierRecord = recordsMois[0];
 
-        const mois = premierRecord.Mois || "";
-        const annee = premierRecord.Annee || "";
+        const numeroMois =
+          Number(premierRecord.Numero_mois_affiche);
+
+        const annee =
+          premierRecord.Annee;
+
+        const nomsMois = [
+          "",
+          "JANVIER",
+          "FÉVRIER",
+          "MARS",
+          "AVRIL",
+          "MAI",
+          "JUIN",
+          "JUILLET",
+          "AOÛT",
+          "SEPTEMBRE",
+          "OCTOBRE",
+          "NOVEMBRE",
+          "DÉCEMBRE"
+        ];
+
+        const nomMois =
+          nomsMois[numeroMois] || "";
 
         titreMois.textContent =
-          String(mois).toUpperCase() + " " + annee;
+          nomMois + " " + annee;
       }
 
       /* =========================
@@ -226,7 +246,8 @@
              CRÉATION DE LA CASE
              ========================= */
 
-          const caseJour = document.createElement("div");
+          const caseJour =
+            document.createElement("div");
 
           caseJour.className = "jour";
 
@@ -242,17 +263,21 @@
              DÉTECTION HORS MOIS
              ========================= */
 
-          const dateJour = new Date(date);
+          const dateJour =
+            new Date(date);
 
           const moisAffiche =
             Number(record.Numero_mois_affiche);
 
-          if ((dateJour.getMonth() + 1) !== moisAffiche) {
+          if (
+            (dateJour.getMonth() + 1)
+            !== moisAffiche
+          ) {
             caseJour.classList.add("hors-mois");
           }
 
           /* =========================
-             CONTENU DE LA CASE
+             CONTENU
              ========================= */
 
           caseJour.innerHTML =
@@ -261,40 +286,50 @@
             '</div>';
 
           /* =========================
-             CLIC SUR UNE JOURNÉE
+             CLIC SUR LA JOURNÉE
              ========================= */
 
-          caseJour.addEventListener("click", async function() {
+          caseJour.addEventListener(
+            "click",
+            async function() {
 
-            /* Mise en évidence */
+              /* Retirer l'ancienne sélection */
 
-            document
-              .querySelectorAll(".jour")
-              .forEach(j => j.classList.remove("selectionne"));
+              document
+                .querySelectorAll(".jour")
+                .forEach(j =>
+                  j.classList.remove("selectionne")
+                );
 
-            caseJour.classList.add("selectionne");
+              /* Sélectionner la nouvelle journée */
 
-            /* Écriture de la date dans Grist */
+              caseJour.classList.add("selectionne");
 
-            const table =
-              await grist.docApi.fetchTable("DATE_SELECTIONNEE");
+              /* Écrire la date dans Grist */
 
-            const ligneId = table.id[0];
+              const table =
+                await grist.docApi.fetchTable(
+                  "DATE_SELECTIONNEE"
+                );
 
-            await grist.docApi.applyUserActions([
+              const ligneId =
+                table.id[0];
 
-              [
-                "UpdateRecord",
-                "DATE_SELECTIONNEE",
-                ligneId,
-                {
-                  Date_consultee: date
-                }
-              ]
+              await grist.docApi.applyUserActions([
 
-            ]);
+                [
+                  "UpdateRecord",
+                  "DATE_SELECTIONNEE",
+                  ligneId,
+                  {
+                    Date_consultee: date
+                  }
+                ]
 
-          });
+              ]);
+
+            }
+          );
 
           contenu.appendChild(caseJour);
 
