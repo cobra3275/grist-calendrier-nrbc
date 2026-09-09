@@ -13,7 +13,20 @@
       margin: 0;
       padding: 10px;
     }
+#entetes {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 6px;
+  margin-bottom: 6px;
+  font-weight: bold;
+  text-align: center;
+}
 
+#entetes div {
+  padding: 8px 4px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+}
     #contenu {
       display: grid;
       grid-template-columns: repeat(7, 1fr);
@@ -47,8 +60,15 @@
 
 <body>
 
-<div id="contenu"></div>
-
+<div id="entetes">
+  <div>LUNDI</div>
+  <div>MARDI</div>
+  <div>MERCREDI</div>
+  <div>JEUDI</div>
+  <div>VENDREDI</div>
+  <div>SAMEDI</div>
+  <div>DIMANCHE</div>
+</div>
 <script>
   grist.ready({
     requiredAccess: "full"
@@ -83,8 +103,7 @@
         caseJour.className = "jour";
 
         caseJour.innerHTML =
-          '<div class="numero">' + nom + '</div>' +
-          '<div class="info">' + (affichage || "") + '</div>';
+  '<div class="info">' + (affichage || "") + '</div>';
 
         caseJour.addEventListener("click", async function() {
   const table = await grist.docApi.fetchTable("DATE_SELECTIONNEE");
