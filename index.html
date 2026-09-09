@@ -59,7 +59,9 @@
     const contenu = document.getElementById("contenu");
     contenu.innerHTML = "";
 
-    records.forEach(record => {
+    records
+  .filter(record => record.Afficher_mois_selectionne)
+  .forEach(record => {
 
      const jours = [
   ["Lundi", record.Lundi, record.Affichage_Lundi],
